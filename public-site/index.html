@@ -1,0 +1,1449 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Unbearable Lightness Archetype Test</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202124;
+      --muted: #62666d;
+      --line: #d9d4cb;
+      --paper: #faf7f0;
+      --panel: #fffdf8;
+      --blue: #466a83;
+      --red: #9a4b48;
+      --green: #65785c;
+      --gold: #aa7a2e;
+      --soft-blue: #dfeaf0;
+      --soft-red: #f0dedb;
+      --soft-green: #e2eadf;
+      --soft-gold: #f2e7d2;
+      --shadow: 0 18px 50px rgba(49, 44, 38, .12);
+      --radius: 8px;
+      font-family: ui-serif, Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(154, 75, 72, .08) 0 16%, transparent 16% 100%),
+        linear-gradient(225deg, rgba(70, 106, 131, .1) 0 18%, transparent 18% 100%),
+        linear-gradient(180deg, #fbf8f1 0%, #f2eee6 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .34;
+      background-image:
+        linear-gradient(rgba(32, 33, 36, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(32, 33, 36, .028) 1px, transparent 1px);
+      background-size: 44px 44px, 44px 44px;
+      mask-image: linear-gradient(180deg, #000 0%, transparent 82%);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible + span {
+      outline: 3px solid rgba(70, 106, 131, .34);
+      outline-offset: 3px;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 18px 18px 42px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0 18px;
+    }
+
+    .mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: #3f4248;
+    }
+
+    .mark svg {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+    }
+
+    .lang-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .7);
+      min-width: 136px;
+    }
+
+    .lang-switch button {
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      min-height: 34px;
+      padding: 0 12px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+    }
+
+    .lang-switch button.active {
+      background: var(--ink);
+      color: #fffdf8;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(300px, .96fr);
+      gap: 26px;
+      align-items: stretch;
+      padding: 26px 0 24px;
+    }
+
+    .intro-copy {
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(42px, 8vw, 92px);
+      line-height: .96;
+      letter-spacing: 0;
+      font-weight: 650;
+    }
+
+    .dek {
+      margin: 26px 0 0;
+      max-width: 680px;
+      font-size: clamp(18px, 2.7vw, 24px);
+      line-height: 1.56;
+      color: #3e4044;
+    }
+
+    .note {
+      margin: 18px 0 0;
+      max-width: 660px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+    }
+
+    .quick-facts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 24px;
+      max-width: 620px;
+    }
+
+    .quick-facts span {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      color: #4d5157;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .primary,
+    .secondary,
+    .icon-button {
+      border: 1px solid var(--ink);
+      border-radius: var(--radius);
+      min-height: 46px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 650;
+      text-decoration: none;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .primary {
+      background: var(--ink);
+      color: #fffdf8;
+    }
+
+    .primary:hover,
+    .secondary:hover,
+    .icon-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(49, 44, 38, .12);
+    }
+
+    .secondary,
+    .icon-button {
+      background: rgba(255, 253, 248, .74);
+      color: var(--ink);
+    }
+
+    .primary svg,
+    .secondary svg,
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .visual {
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      background:
+        linear-gradient(rgba(255, 253, 248, .34), rgba(255, 253, 248, .16)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 1200'%3E%3Crect width='900' height='1200' fill='%23e8e0d2'/%3E%3Cpath d='M0 831 C150 761 215 774 339 705 C500 615 548 490 680 437 C768 401 835 422 900 449 L900 1200 L0 1200 Z' fill='%23b9c8c7'/%3E%3Cpath d='M0 920 C113 873 237 892 362 833 C532 753 588 653 733 605 C801 582 858 588 900 602 L900 1200 L0 1200 Z' fill='%238fa2a3' opacity='.78'/%3E%3Cpath d='M0 1007 C170 948 300 989 456 918 C592 856 676 777 900 753 L900 1200 L0 1200 Z' fill='%23466a83' opacity='.78'/%3E%3Cpath d='M449 122 L471 122 L471 1002 L449 1002 Z' fill='%233b3d42' opacity='.65'/%3E%3Cpath d='M284 208 L307 196 L548 651 L525 663 Z' fill='%233b3d42' opacity='.5'/%3E%3Cpath d='M588 198 L611 211 L367 665 L344 652 Z' fill='%233b3d42' opacity='.44'/%3E%3Cpath d='M226 236 C335 177 448 153 581 181 C523 228 450 266 349 285 C304 293 264 289 226 236 Z' fill='%239a4b48' opacity='.83'/%3E%3Cpath d='M536 188 C650 160 760 184 861 255 C804 294 729 310 628 297 C585 291 554 254 536 188 Z' fill='%2365785c' opacity='.82'/%3E%3Cpath d='M41 265 C153 198 261 191 374 226 C316 282 240 314 137 324 C91 328 60 309 41 265 Z' fill='%23aa7a2e' opacity='.76'/%3E%3Cpath d='M274 386 C386 344 490 354 587 420 C520 459 441 473 342 446 C301 435 279 415 274 386 Z' fill='%23f0dedb' opacity='.88'/%3E%3Ccircle cx='455' cy='134' r='44' fill='%23fbf8f1' opacity='.8'/%3E%3Cpath d='M430 130 C447 113 463 113 481 130 C463 151 447 151 430 130 Z' fill='%233b3d42' opacity='.56'/%3E%3Cpath d='M89 1121 C196 1037 308 1026 441 1081 C347 1134 215 1169 89 1121 Z' fill='%23f2e7d2' opacity='.82'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .visual-labels {
+      position: absolute;
+      inset: auto 18px 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-profile {
+      min-height: 76px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 253, 248, .54);
+      background: rgba(255, 253, 248, .78);
+      backdrop-filter: blur(12px);
+      padding: 12px;
+    }
+
+    .mini-profile b {
+      display: block;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+    }
+
+    .mini-profile span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .section {
+      margin-top: 18px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .78);
+      box-shadow: 0 12px 36px rgba(49, 44, 38, .08);
+    }
+
+    .section h2,
+    .result h2 {
+      margin: 0;
+      font-size: clamp(27px, 4vw, 42px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .section-lead {
+      margin: 10px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.72;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .archetypes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .type-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: var(--panel);
+      min-height: 260px;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .type-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(49, 44, 38, .1);
+    }
+
+    .type-card[data-key="tomas"] {
+      border-top: 5px solid var(--blue);
+    }
+
+    .type-card[data-key="teresa"] {
+      border-top: 5px solid var(--red);
+    }
+
+    .type-card[data-key="sabina"] {
+      border-top: 5px solid var(--green);
+    }
+
+    .type-card[data-key="franz"] {
+      border-top: 5px solid var(--gold);
+    }
+
+    .type-card h3 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .type-card p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.62;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+    }
+
+    .quiz-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .progress-wrap {
+      min-width: 220px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .progress-track {
+      margin-top: 8px;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e6dfd3;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--red), var(--green), var(--gold));
+      transition: width .2s ease;
+    }
+
+    .questions {
+      display: grid;
+      gap: 14px;
+    }
+
+    .question {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 18px;
+      transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .question.is-answered {
+      border-color: rgba(70, 106, 131, .52);
+      box-shadow: inset 4px 0 0 rgba(70, 106, 131, .42);
+    }
+
+    .question.is-missing {
+      border-color: rgba(154, 75, 72, .76);
+      box-shadow: inset 4px 0 0 rgba(154, 75, 72, .6);
+    }
+
+    .question-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .question-kicker {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 8px;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .scale {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(42px, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .scale label {
+      position: relative;
+      min-height: 48px;
+      border: 1px solid #d8d0c3;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fbf8f1;
+      color: #44484d;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 700;
+      transition: transform .14s ease, border-color .14s ease, background .14s ease;
+    }
+
+    .scale label:hover {
+      border-color: rgba(32, 33, 36, .42);
+      background: #fffdf8;
+      transform: translateY(-1px);
+    }
+
+    .scale input {
+      position: absolute;
+      opacity: 0;
+      inset: 0;
+      cursor: pointer;
+    }
+
+    .scale label span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .scale label:has(input:checked) {
+      background: #202124;
+      border-color: #202124;
+      color: #fffdf8;
+      transform: translateY(-1px);
+    }
+
+    .scale-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .quiz-actions {
+      position: sticky;
+      bottom: 0;
+      margin: 18px -26px -26px;
+      padding: 14px 26px;
+      border-top: 1px solid var(--line);
+      background: rgba(250, 247, 240, .92);
+      backdrop-filter: blur(12px);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      z-index: 10;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result-hero {
+      padding: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 230px;
+      gap: 24px;
+      align-items: center;
+      background: linear-gradient(120deg, var(--soft-blue), #fffdf8);
+    }
+
+    .result[data-key="teresa"] .result-hero {
+      background: linear-gradient(120deg, var(--soft-red), #fffdf8);
+    }
+
+    .result[data-key="sabina"] .result-hero {
+      background: linear-gradient(120deg, var(--soft-green), #fffdf8);
+    }
+
+    .result[data-key="franz"] .result-hero {
+      background: linear-gradient(120deg, var(--soft-gold), #fffdf8);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 6px 10px;
+      border: 1px solid rgba(32, 33, 36, .18);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .64);
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .badge svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .result-copy p {
+      color: #3f4248;
+      line-height: 1.72;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 14px 0 0;
+    }
+
+    .score-card {
+      border: 1px solid rgba(32, 33, 36, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .72);
+      padding: 14px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr) 42px;
+      gap: 8px;
+      align-items: center;
+      margin: 10px 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+    }
+
+    .score-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(32, 33, 36, .12);
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: var(--blue);
+    }
+
+    .score-row:nth-child(2) .score-fill {
+      background: var(--red);
+    }
+
+    .score-row:nth-child(3) .score-fill {
+      background: var(--green);
+    }
+
+    .score-row:nth-child(4) .score-fill {
+      background: var(--gold);
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding: 20px 28px 28px;
+    }
+
+    .insight {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: #fffdf8;
+    }
+
+    .insight h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.28;
+    }
+
+    .insight p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      line-height: 1.62;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+    }
+
+    .insight.wide {
+      grid-column: span 2;
+    }
+
+    .result-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 2px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(120%);
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fffdf8;
+      padding: 11px 16px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+      transition: transform .22s ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .app {
+        padding: 12px 12px 32px;
+      }
+
+      .intro {
+        grid-template-columns: 1fr;
+        padding-top: 8px;
+      }
+
+      .intro-copy {
+        min-height: auto;
+        padding: 22px 0 0;
+      }
+
+      .visual {
+        min-height: 390px;
+        order: -1;
+      }
+
+      .archetypes,
+      .result-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .insight.wide {
+        grid-column: span 2;
+      }
+
+      .result-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .quiz-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .progress-wrap {
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .mark {
+        max-width: 190px;
+      }
+
+      .visual-labels,
+      .archetypes,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .insight.wide {
+        grid-column: span 1;
+      }
+
+      .visual {
+        min-height: 420px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .quick-facts {
+        grid-template-columns: 1fr;
+      }
+
+      .quiz-actions {
+        margin: 18px -18px -18px;
+        padding: 12px 18px;
+      }
+
+      .quiz-actions .secondary {
+        display: none;
+      }
+
+      .primary,
+      .secondary {
+        width: 100%;
+      }
+
+      .result-actions {
+        flex-direction: column;
+      }
+
+      .scale {
+        gap: 6px;
+      }
+
+      .scale label {
+        min-height: 44px;
+      }
+
+      .result-hero,
+      .result-grid {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="mark" aria-label="The Unbearable Lightness Archetype Test">
+        <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M20 4v32M8 22c7.5-8.5 15.5-8.5 24 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M14 12c4-4 8-4 12 0-4 4.5-8 4.5-12 0Z" fill="currentColor" opacity=".28"/>
+          <path d="M9 29c6-3.8 13.7-3.8 22 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+        </svg>
+        <span data-i18n="brand">《生命中不能承受之轻》人格原型测试</span>
+      </div>
+      <div class="lang-switch" aria-label="Language">
+        <button type="button" class="active" data-lang="zh">中文</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div class="intro-copy">
+          <h1 data-i18n="title">你更像哪一种轻与重？</h1>
+          <p class="dek" data-i18n="dek">围绕托马斯、特蕾莎、萨宾娜、弗兰茨四位主人公，测试你在爱、自由、忠诚、想象与逃离之间更接近哪一种生命姿态。</p>
+          <p class="note" data-i18n="note">这不是临床心理测评，而是一份文学性自我观察。请凭第一反应作答：1 表示非常不同意，5 表示非常同意。</p>
+          <div class="quick-facts" aria-label="Test details">
+            <span data-i18n="factQuestions">40 道题，约 4 分钟</span>
+            <span data-i18n="factLanguage">中英双语，一键切换</span>
+            <span data-i18n="factResult">含主原型、混合倾向与提醒</span>
+          </div>
+          <div class="actions">
+            <a href="#quiz" class="primary">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span data-i18n="start">开始测试</span>
+            </a>
+            <a href="#guide" class="secondary">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span data-i18n="readGuide">先看原型</span>
+            </a>
+          </div>
+        </div>
+        <div class="visual" aria-label="Abstract Prague landscape with four literary archetype labels">
+          <div class="visual-labels">
+            <div class="mini-profile"><b data-i18n="tomasName">托马斯</b><span data-i18n="tomasMini">轻盈、好奇、回避被定义</span></div>
+            <div class="mini-profile"><b data-i18n="teresaName">特蕾莎</b><span data-i18n="teresaMini">深情、凝视、渴望完整</span></div>
+            <div class="mini-profile"><b data-i18n="sabinaName">萨宾娜</b><span data-i18n="sabinaMini">背叛、创造、拒绝 kitsch</span></div>
+            <div class="mini-profile"><b data-i18n="franzName">弗兰茨</b><span data-i18n="franzMini">理想、崇高、奔向意义</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="guide">
+        <h2 data-i18n="guideTitle">四个原型速写</h2>
+        <p class="section-lead" data-i18n="guideLead">小说中的人物不是单薄标签，而是四种张力：身体与灵魂、轻与重、私密与公共、忠诚与背叛。测试会寻找你最常采用的生命策略。</p>
+        <div class="archetypes" id="archetypes"></div>
+      </section>
+
+      <section class="section" id="quiz">
+        <div class="quiz-head">
+          <div>
+            <h2 data-i18n="quizTitle">测试题</h2>
+            <p class="section-lead" data-i18n="quizLead">共 40 题。请选择你在多数关系与生活选择中更常出现的倾向。</p>
+          </div>
+          <div class="progress-wrap">
+            <span id="progressText">已完成: 0 / 40</span>
+            <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+          </div>
+        </div>
+        <form id="quizForm">
+          <div class="questions" id="questions"></div>
+          <div class="quiz-actions">
+            <button type="button" class="secondary" id="resetBtn">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span data-i18n="reset">重置</span>
+            </button>
+            <button type="submit" class="primary">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span data-i18n="seeResult">查看结果</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="result" id="result" aria-live="polite"></section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const data = {
+      zh: {
+        brand: "《生命中不能承受之轻》人格原型测试",
+        title: "你更像哪一种轻与重？",
+        dek: "围绕托马斯、特蕾莎、萨宾娜、弗兰茨四位主人公，测试你在爱、自由、忠诚、想象与逃离之间更接近哪一种生命姿态。",
+        note: "这不是临床心理测评，而是一份文学性自我观察。请凭第一反应作答：1 表示非常不同意，5 表示非常同意。",
+        factQuestions: "40 道题，约 4 分钟",
+        factLanguage: "中英双语，一键切换",
+        factResult: "含主原型、混合倾向与提醒",
+        start: "开始测试",
+        readGuide: "先看原型",
+        guideTitle: "四个原型速写",
+        guideLead: "小说中的人物不是单薄标签，而是四种张力：身体与灵魂、轻与重、私密与公共、忠诚与背叛。测试会寻找你最常采用的生命策略。",
+        quizTitle: "测试题",
+        quizLead: "共 40 题。请选择你在多数关系与生活选择中更常出现的倾向。",
+        reset: "重置",
+        seeResult: "查看结果",
+        progress: "已完成",
+        disagree: "非常不同意",
+        agree: "非常同意",
+        missing: "还有题目没有回答。",
+        resultLabel: "你的主要原型",
+        scoreLabel: "得分轮廓",
+        blendLabel: "混合倾向",
+        strengthLabel: "优势",
+        shadowLabel: "阴影",
+        adviceLabel: "给你的提醒",
+        retake: "重新测试",
+        copyResult: "复制结果",
+        shareResult: "复制分享链接",
+        copied: "结果已复制",
+        shareCopied: "分享链接已复制",
+        copyFailed: "复制失败，请手动选择文字",
+        shareFailed: "复制失败，请手动复制地址栏链接",
+        names: {
+          tomas: "托马斯",
+          teresa: "特蕾莎",
+          sabina: "萨宾娜",
+          franz: "弗兰茨"
+        },
+        mini: {
+          tomas: "轻盈、好奇、回避被定义",
+          teresa: "深情、凝视、渴望完整",
+          sabina: "背叛、创造、拒绝 kitsch",
+          franz: "理想、崇高、奔向意义"
+        },
+        types: {
+          tomas: {
+            title: "托马斯型：轻盈的观察者",
+            summary: "你倾向把人生看成开放的可能性。你珍视自由、机智、经验和清醒的距离感，不喜欢被关系、身份或道德口号过早固定。",
+            guide: "托马斯的轻并不只是放纵，也是一种不愿被单一意义吞没的敏感。他能看穿沉重叙事，却也可能把亲密变成可撤退的房间。",
+            deep: "他的核心冲突是自由与责任：既渴望不被命运、婚姻、政治和道德话语捕获，又会在真正的依恋面前发现自己并非完全轻盈。托马斯型的人常把世界看成复杂的、多入口的，所以讨厌粗暴判断。",
+            relation: "在关系里，你可能既温柔又保留，既被某个人打动，又需要自己的空气。你重视真实胜过形式，但有时会低估形式本身对他人的安慰意义。",
+            strength: "你有强大的辨析力和行动弹性，能在复杂关系中保持头脑清楚，也能欣赏人性的矛盾。",
+            shadow: "当你害怕被要求承担全部重量时，可能会把自由误认成不必回应，把诚实误认成可以不安放他人。",
+            advice: "允许自己被某件事、某个人、某种承诺稍微改变。真正的轻盈不是永远不落地，而是知道何时落地仍不失去呼吸。"
+          },
+          teresa: {
+            title: "特蕾莎型：灵魂的凝视者",
+            summary: "你很难把爱仅仅理解成轻松陪伴。你渴望被完整看见，也想确认身体、记忆和命运之间存在某种唯一的深意。",
+            guide: "特蕾莎的重来自她对灵魂的坚持。她相信爱需要一种不可替代性，因此也更容易被背叛、暧昧和偶然性刺痛。",
+            deep: "她的核心冲突是灵魂与身体：她想从身体的偶然性中拯救出一个完整的自我，也想在爱里证明自己不是可替换的。特蕾莎型的人通常有强烈的内在感受，记忆、梦、羞耻和依恋会彼此牵连。",
+            relation: "在关系里，你倾向于寻找深度承认，而不只是陪伴。你会被细节打动，也会被细节刺痛；你需要的是被选择、被看见、被认真对待。",
+            strength: "你有罕见的深情、忠诚和感受力，能在日常细节中辨认出关系真正的温度。",
+            shadow: "当你过度寻找确定性时，爱会被焦虑挤压，亲密也可能变成证明题。",
+            advice: "把你的深情从审判中解放出来。你可以重视唯一性，同时给自己留出不被恐惧支配的空间。"
+          },
+          sabina: {
+            title: "萨宾娜型：背叛的艺术家",
+            summary: "你对任何固定身份、集体仪式和廉价感动都保持警觉。你相信逃离、变形和创造能保护一个人的真实。",
+            guide: "萨宾娜的背叛不是简单的不忠，而是对僵硬意义的反叛。她不断离开，是为了不让生活被标语、家庭、政治或爱情完全解释。",
+            deep: "她的核心冲突是创造与归属：她需要不断越界，才能确认自己还活在真实里。萨宾娜型的人对 kitsch 尤其敏感，害怕被共同感动、家庭叙事、政治姿态或爱情模板抹平。",
+            relation: "在关系里，你可能迷人、敏锐、难以占有。你珍惜被理解，却害怕理解变成命名；你能给予强烈吸引，也会在对方想固定你时迅速后退。",
+            strength: "你拥有锋利的审美直觉和自我更新能力，能迅速识别虚假的庄严，也敢于从旧剧本中抽身。",
+            shadow: "一再离开会让自由变得孤单。你可能太快把依恋看成陷阱，把被理解看成失去边界。",
+            advice: "保留你的反叛，但试着区分束缚与连接。不是所有停留都会背叛你的自由。"
+          },
+          franz: {
+            title: "弗兰茨型：崇高的追寻者",
+            summary: "你容易被理想、公共意义和超越个人的小我所吸引。你相信爱和行动应当指向更大的东西。",
+            guide: "弗兰茨的重是一种对崇高的饥渴。他向往队伍、远方和庄严姿态，也可能把真实的人投射成理想的象征。",
+            deep: "他的核心冲突是理想与现实：他相信生命需要更高的见证，需要超越私人幸福的价值。弗兰茨型的人常有献身冲动，也容易被远方、历史现场和宏大姿态召唤。",
+            relation: "在关系里，你常把爱和意义连接在一起。你会欣赏一个人身上的象征性光芒，但也要小心：对方可能不是你的理想剧本，而是一个复杂、会沉默、会矛盾的人。",
+            strength: "你真诚、慷慨、愿意为价值付出，能把个人生活与更辽阔的关怀连接起来。",
+            shadow: "当意义过于明亮时，你可能忽略眼前人的复杂，或把亲密关系变成自我叙事的一部分。",
+            advice: "让理想靠近现实的脸。伟大的情感不只在远方，也在愿意看见一个人真实的、不合唱的部分。"
+          }
+        },
+        questions: [
+          { text: "我很珍惜亲密关系，但不希望它定义我的全部生活。", weights: { tomas: 3, sabina: 2, teresa: -1 } },
+          { text: "如果爱是真的，它应该带有某种不可替代的命运感。", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "我对集体性的热泪、口号和统一姿态会本能警惕。", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "我愿意为了一个更大的理想，把私人舒适放到后面。", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "我常用清醒、幽默或分析来避免情绪把我淹没。", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "我会反复咀嚼一个眼神、一句话或一次沉默的意义。", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "当某个环境开始要求我扮演固定角色，我会想离开。", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "我容易爱上一个人身上象征的高贵、勇气或远方。", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "我认为欲望和爱可以很复杂，不必总被同一种道德语言解释。", weights: { tomas: 3, sabina: 2, franz: -1 } },
+          { text: "我害怕自己在爱里只是众多选择之一。", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "比起归属感，我更需要保留一个无法被完全解释的自我。", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "我相信行动应该有见证者，意义也需要被公开承担。", weights: { franz: 3, sabina: -1, tomas: -1 } },
+          { text: "面对重大选择，我会想：反正人生只活一次，谁能确定答案？", weights: { tomas: 3, sabina: 1, franz: -1 } },
+          { text: "我对身体、羞耻、梦和记忆之间的联系非常敏感。", weights: { teresa: 3, sabina: 1 } },
+          { text: "我宁愿被误解，也不愿被庸俗的幸福模板收编。", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "我会被游行、远行、使命感或历史现场深深触动。", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "我相信保持一点距离，反而能让我更诚实地看待关系。", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "我希望爱能把混乱生活整理成一个可以安放灵魂的地方。", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "我生命中重要的转折，常来自一次主动的断裂或背离。", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "如果没有值得献身的价值，生活会显得太轻。", weights: { franz: 3, teresa: 1, tomas: -1 } },
+          { text: "我宁愿承认人的矛盾，也不愿把爱情简化成对错题。", weights: { tomas: 3, sabina: 1, franz: -1 } },
+          { text: "我常需要确认：对方爱的不是一个角色，而是真正的我。", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "我对过分整齐、过分感人的场面会产生逃离冲动。", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "我希望自己的生活能被某种使命、事业或信念照亮。", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "我不太相信唯一正确的人生道路，更相信偶然带来的转向。", weights: { tomas: 3, sabina: 2, teresa: -1 } },
+          { text: "我会把亲密关系中的不安转化成梦、想象或反复回忆。", weights: { teresa: 3, sabina: 1 } },
+          { text: "我害怕被故乡、家庭、职业或恋人解释得太完整。", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "我很容易被一个人坚定相信某事的样子吸引。", weights: { franz: 3, teresa: 1, tomas: -1 } },
+          { text: "我面对承诺时，会先思考它是否仍给双方留下自由。", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "我会把爱看成一个可以安顿羞耻和孤独的地方。", weights: { teresa: 3, franz: 1 } },
+          { text: "当别人把痛苦包装成正确姿态，我会觉得不舒服。", weights: { sabina: 3, tomas: 2, franz: -1 } },
+          { text: "我愿意为了证明某种价值，走向不熟悉甚至危险的地方。", weights: { franz: 3, sabina: 1, tomas: -1 } },
+          { text: "我在关系里需要诚实，但不一定需要传统形式的保证。", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "我很在意自己是否被当作独一无二的人来珍惜。", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "我常通过改变风格、城市、身份或作品来重新开始。", weights: { sabina: 3, tomas: 1 } },
+          { text: "我相信个人幸福不应完全脱离时代、他人和公共责任。", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "我能接受爱里有无法彻底解释的欲望和距离。", weights: { tomas: 3, sabina: 2, teresa: -1 } },
+          { text: "我对背叛尤其敏感，因为它会动摇我对自我价值的确认。", weights: { teresa: 3, franz: 1, sabina: -1 } },
+          { text: "我更愿意保留私人真相，而不是加入众人都认可的幸福图景。", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "我希望死亡、失败或痛苦也能被放进一个更大的意义里。", weights: { franz: 3, teresa: 1, tomas: -1 } }
+        ]
+      },
+      en: {
+        brand: "The Unbearable Lightness Archetype Test",
+        title: "Which form of lightness or weight are you?",
+        dek: "A bilingual literary quiz built around Tomas, Tereza, Sabina, and Franz, tracing how you move through love, freedom, loyalty, imagination, and escape.",
+        note: "This is not a clinical personality test. It is a literary mirror. Answer by instinct: 1 means strongly disagree, 5 means strongly agree.",
+        factQuestions: "40 questions, about 4 minutes",
+        factLanguage: "Bilingual Chinese and English",
+        factResult: "Main type, blend, and a note",
+        start: "Start the test",
+        readGuide: "Read archetypes",
+        guideTitle: "Four Archetypes",
+        guideLead: "The novel’s characters are not flat labels. They hold tensions between body and soul, lightness and weight, privacy and public meaning, loyalty and betrayal. This test looks for your most familiar life strategy.",
+        quizTitle: "Questions",
+        quizLead: "40 questions. Choose the tendency that appears most often in your relationships and life choices.",
+        reset: "Reset",
+        seeResult: "See result",
+        progress: "Completed",
+        disagree: "Strongly disagree",
+        agree: "Strongly agree",
+        missing: "Some questions are still unanswered.",
+        resultLabel: "Your main archetype",
+        scoreLabel: "Score profile",
+        blendLabel: "Secondary tendency",
+        strengthLabel: "Gift",
+        shadowLabel: "Shadow",
+        adviceLabel: "A note for you",
+        retake: "Retake",
+        copyResult: "Copy result",
+        shareResult: "Copy share link",
+        copied: "Result copied",
+        shareCopied: "Share link copied",
+        copyFailed: "Copy failed. Please select the text manually.",
+        shareFailed: "Copy failed. Please copy the address bar link manually.",
+        names: {
+          tomas: "Tomas",
+          teresa: "Tereza",
+          sabina: "Sabina",
+          franz: "Franz"
+        },
+        mini: {
+          tomas: "Light, curious, resistant to definition",
+          teresa: "Tender, watchful, longing for wholeness",
+          sabina: "Betrayal, creation, refusal of kitsch",
+          franz: "Idealism, grandeur, hunger for meaning"
+        },
+        types: {
+          tomas: {
+            title: "Tomas: The Lucid Observer",
+            summary: "You tend to see life as an open field of possibilities. You value freedom, wit, experience, and lucid distance, and you dislike being fixed too quickly by relationships, roles, or moral slogans.",
+            guide: "Tomas’s lightness is not mere indulgence. It is a sensitivity to being swallowed by one meaning. He can see through heavy narratives, yet he may turn intimacy into a room with an exit.",
+            deep: "His central conflict is freedom versus responsibility: he resists being captured by fate, marriage, politics, or moral language, yet real attachment reveals that he is not entirely weightless. Tomas-like people often see the world as complex and multi-entered, so they dislike crude judgment.",
+            relation: "In relationships, you may be both tender and reserved, moved by someone yet in need of air. You value truth over form, but may underestimate how much form itself can comfort another person.",
+            strength: "You have strong discernment and flexibility. You can stay clear-headed inside complicated relationships and appreciate human contradiction.",
+            shadow: "When you fear being asked to carry the whole weight, you may mistake freedom for not having to answer, and honesty for not having to hold another person carefully.",
+            advice: "Let yourself be altered by a person, a promise, or a chosen weight. Real lightness is not never landing; it is knowing when landing does not steal your breath."
+          },
+          teresa: {
+            title: "Tereza: The Gaze of the Soul",
+            summary: "You rarely understand love as casual companionship. You long to be seen completely, and you want body, memory, and fate to carry a singular meaning.",
+            guide: "Tereza’s weight comes from her faith in the soul. She believes love requires irreplaceability, which makes betrayal, ambiguity, and chance especially painful.",
+            deep: "Her central conflict is soul versus body: she wants to rescue a whole self from bodily contingency, and she wants love to prove she is not replaceable. Tereza-like people usually have a strong inner weather; memory, dreams, shame, and attachment speak to one another.",
+            relation: "In relationships, you seek deep recognition rather than mere companionship. You are moved by details and wounded by details; what you need is to be chosen, seen, and taken seriously.",
+            strength: "You have rare tenderness, loyalty, and perceptiveness. You can read the true temperature of a relationship in small daily details.",
+            shadow: "When you search too hard for certainty, love can be squeezed by anxiety, and intimacy can become a test that must be passed.",
+            advice: "Free your depth from judgment. You can honor uniqueness while giving yourself room not to be ruled by fear."
+          },
+          sabina: {
+            title: "Sabina: The Artist of Betrayal",
+            summary: "You are alert to fixed identities, collective rituals, and cheap sentiment. You believe escape, transformation, and creation can protect what is real in a person.",
+            guide: "Sabina’s betrayal is not simple disloyalty. It is rebellion against rigid meaning. She leaves so that life cannot be fully explained by slogans, family, politics, or love.",
+            deep: "Her central conflict is creation versus belonging: she needs to cross borders in order to feel that she is still living truthfully. Sabina-like people are especially sensitive to kitsch and fear being flattened by shared sentiment, family narratives, political posture, or romantic templates.",
+            relation: "In relationships, you may be magnetic, perceptive, and hard to possess. You cherish being understood, yet fear understanding will turn into naming; you can offer intense attraction and step back quickly when someone tries to fix you in place.",
+            strength: "You have sharp aesthetic instinct and a gift for self-renewal. You quickly detect false solemnity and dare to step out of old scripts.",
+            shadow: "Repeated leaving can make freedom lonely. You may too quickly read attachment as a trap, and being understood as a loss of boundary.",
+            advice: "Keep your rebellion, but distinguish confinement from connection. Not every act of staying betrays your freedom."
+          },
+          franz: {
+            title: "Franz: The Seeker of the Grand Cause",
+            summary: "You are drawn to ideals, public meaning, and something larger than the private self. You believe love and action should point beyond personal comfort.",
+            guide: "Franz’s weight is a hunger for the sublime. He longs for marches, distance, and noble gestures, yet he may turn real people into symbols of an ideal.",
+            deep: "His central conflict is ideal versus reality: he believes life needs higher witness and values beyond private happiness. Franz-like people often carry an impulse toward devotion and can be summoned by distance, history, and grand gestures.",
+            relation: "In relationships, you often connect love with meaning. You may admire the symbolic light around a person, but take care: the other person may not be your ideal script, but a complex human being who can be silent, contradictory, and ordinary.",
+            strength: "You are sincere, generous, and willing to pay a price for values. You connect private life to a wider field of concern.",
+            shadow: "When meaning shines too brightly, you may miss the complexity of the person in front of you, or turn intimacy into part of your own story.",
+            advice: "Bring your ideals close to actual faces. Great feeling is not only far away; it also lives in seeing the unchorused truth of one person."
+          }
+        },
+        questions: [
+          { text: "I value intimacy, but I do not want it to define my entire life.", weights: { tomas: 3, sabina: 2, teresa: -1 } },
+          { text: "If love is real, it should carry a sense of irreplaceable fate.", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "I instinctively distrust collective tears, slogans, and unified gestures.", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "For a larger ideal, I can put private comfort second.", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "I often use clarity, humor, or analysis to avoid being overwhelmed by emotion.", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "I return again and again to the meaning of a glance, a sentence, or a silence.", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "When a setting asks me to play a fixed role, I want to leave.", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "I can fall in love with the nobility, courage, or distance someone seems to symbolize.", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "I think desire and love can be complex and need not be explained by one moral language.", weights: { tomas: 3, sabina: 2, franz: -1 } },
+          { text: "I fear being only one option among many in love.", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "More than belonging, I need to preserve a self that cannot be fully explained.", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "I believe action needs witnesses, and meaning should be publicly carried.", weights: { franz: 3, sabina: -1, tomas: -1 } },
+          { text: "When facing a major choice, I think: life happens only once, so who can know the answer?", weights: { tomas: 3, sabina: 1, franz: -1 } },
+          { text: "I am sensitive to links between body, shame, dreams, and memory.", weights: { teresa: 3, sabina: 1 } },
+          { text: "I would rather be misunderstood than absorbed into a vulgar template of happiness.", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "Marches, journeys, missions, or historical scenes can move me deeply.", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "I believe a little distance can make me more honest about relationships.", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "I want love to arrange a chaotic life into a place where the soul can rest.", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "Important turns in my life often come from an active rupture or betrayal of an old path.", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "Without a value worth devotion, life feels too light.", weights: { franz: 3, teresa: 1, tomas: -1 } },
+          { text: "I would rather admit human contradiction than reduce love to a question of right and wrong.", weights: { tomas: 3, sabina: 1, franz: -1 } },
+          { text: "I often need reassurance that the other person loves the real me, not a role I perform.", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "Overly tidy, overly moving scenes make me want to escape.", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "I want my life to be illuminated by a mission, work, or belief.", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "I do not believe much in one correct life path; I trust the turns created by chance.", weights: { tomas: 3, sabina: 2, teresa: -1 } },
+          { text: "I turn unease in intimacy into dreams, imagination, or repeated memory.", weights: { teresa: 3, sabina: 1 } },
+          { text: "I fear being explained too completely by hometown, family, profession, or lover.", weights: { sabina: 3, tomas: 1, teresa: -1 } },
+          { text: "I am easily drawn to the way someone firmly believes in something.", weights: { franz: 3, teresa: 1, tomas: -1 } },
+          { text: "When facing commitment, I first ask whether it still leaves freedom for both people.", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "I see love as a place where shame and loneliness can finally rest.", weights: { teresa: 3, franz: 1 } },
+          { text: "When people package pain as a correct posture, I feel uncomfortable.", weights: { sabina: 3, tomas: 2, franz: -1 } },
+          { text: "I would go somewhere unfamiliar, even risky, to prove a value.", weights: { franz: 3, sabina: 1, tomas: -1 } },
+          { text: "In relationships I need honesty, but not necessarily the traditional forms of assurance.", weights: { tomas: 3, sabina: 1, teresa: -1 } },
+          { text: "I care deeply about being cherished as an irreplaceable person.", weights: { teresa: 3, franz: 1, tomas: -1 } },
+          { text: "I often restart myself through changes in style, city, identity, or work.", weights: { sabina: 3, tomas: 1 } },
+          { text: "I believe personal happiness should not be entirely separate from history, others, and public responsibility.", weights: { franz: 3, teresa: 1, sabina: -1 } },
+          { text: "I can accept desire and distance in love that cannot be fully explained.", weights: { tomas: 3, sabina: 2, teresa: -1 } },
+          { text: "I am especially sensitive to betrayal because it shakes my confirmation of self-worth.", weights: { teresa: 3, franz: 1, sabina: -1 } },
+          { text: "I would rather preserve a private truth than enter a widely approved picture of happiness.", weights: { sabina: 3, tomas: 1, franz: -1 } },
+          { text: "I want even death, failure, or pain to belong to a larger meaning.", weights: { franz: 3, teresa: 1, tomas: -1 } }
+        ]
+      }
+    };
+
+    const keys = ["tomas", "teresa", "sabina", "franz"];
+    let currentLang = "zh";
+    let activeScores = null;
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function text(path) {
+      return path.split(".").reduce((obj, key) => obj[key], data[currentLang]);
+    }
+
+    function setLanguage(lang) {
+      const savedAnswers = getAnswers();
+      currentLang = lang;
+      document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+      $$("[data-lang]").forEach((btn) => btn.classList.toggle("active", btn.dataset.lang === lang));
+      $$("[data-i18n]").forEach((node) => {
+        const key = node.dataset.i18n;
+        const nameKey = key.endsWith("Name") ? key.replace("Name", "") : "";
+        const miniKey = key.endsWith("Mini") ? key.replace("Mini", "") : "";
+        const value = data[lang][key] || data[lang].names?.[nameKey] || data[lang].mini?.[miniKey] || "";
+        if (value) node.textContent = value;
+      });
+      renderArchetypes();
+      renderQuestions();
+      restoreAnswers(savedAnswers);
+      updateProgress();
+      if (activeScores) {
+        renderResult(activeScores, { scroll: false, updateUrl: true });
+      } else {
+        $("#result").classList.remove("show");
+      }
+    }
+
+    function renderArchetypes() {
+      const html = keys.map((key) => `
+        <article class="type-card" data-key="${key}">
+          <h3>${data[currentLang].names[key]}</h3>
+          <p>${data[currentLang].types[key].guide}</p>
+          <p>${data[currentLang].types[key].deep}</p>
+        </article>
+      `).join("");
+      $("#archetypes").innerHTML = html;
+    }
+
+    function renderQuestions() {
+      const labels = data[currentLang];
+      $("#questions").innerHTML = labels.questions.map((question, index) => `
+        <fieldset class="question">
+          <legend class="question-title"><span class="question-kicker">${String(index + 1).padStart(2, "0")}</span>${question.text}</legend>
+          <div class="scale" role="radiogroup" aria-label="${question.text}">
+            ${[1, 2, 3, 4, 5].map((value) => `
+              <label>
+                <input type="radio" name="q${index}" value="${value}">
+                <span>${value}</span>
+              </label>
+            `).join("")}
+          </div>
+          <div class="scale-caption">
+            <span>${labels.disagree}</span>
+            <span>${labels.agree}</span>
+          </div>
+        </fieldset>
+      `).join("");
+      $$("input[type='radio']").forEach((input) => input.addEventListener("change", () => {
+        input.closest(".question").classList.remove("is-missing");
+        updateProgress();
+      }));
+    }
+
+    function getAnswers() {
+      return Object.fromEntries(new FormData($("#quizForm")).entries());
+    }
+
+    function restoreAnswers(answers) {
+      Object.entries(answers).forEach(([name, value]) => {
+        const input = document.querySelector(`[name="${name}"][value="${value}"]`);
+        if (input) input.checked = true;
+      });
+    }
+
+    function updateProgress() {
+      const total = data[currentLang].questions.length;
+      const answered = new FormData($("#quizForm")).keys();
+      const count = new Set(Array.from(answered)).size;
+      $("#progressText").textContent = `${data[currentLang].progress}: ${count} / ${total}`;
+      $("#progressBar").style.width = `${(count / total) * 100}%`;
+      $$(".question").forEach((question, index) => {
+        question.classList.toggle("is-answered", Boolean(document.querySelector(`[name="q${index}"]:checked`)));
+      });
+    }
+
+    function calculateScores(formData) {
+      const scores = Object.fromEntries(keys.map((key) => [key, 0]));
+      data[currentLang].questions.forEach((question, index) => {
+        const raw = Number(formData.get(`q${index}`));
+        const centered = raw - 3;
+        Object.entries(question.weights).forEach(([key, weight]) => {
+          scores[key] += centered * weight;
+        });
+      });
+      const min = Math.min(...Object.values(scores));
+      const shifted = Object.fromEntries(keys.map((key) => [key, scores[key] - min + 1]));
+      const max = Math.max(...Object.values(shifted));
+      return {
+        raw: scores,
+        percent: Object.fromEntries(keys.map((key) => [key, Math.round((shifted[key] / max) * 100)]))
+      };
+    }
+
+    function renderResult(scores, options = {}) {
+      const settings = { scroll: true, updateUrl: true, ...options };
+      activeScores = {
+        raw: { ...scores.raw },
+        percent: { ...scores.percent }
+      };
+      const sorted = [...keys].sort((a, b) => scores.raw[b] - scores.raw[a]);
+      const main = sorted[0];
+      const second = sorted[1];
+      const t = data[currentLang];
+      const mainType = t.types[main];
+      const secondName = t.names[second];
+      const secondSummary = t.types[second].summary;
+      $("#result").dataset.key = main;
+      $("#result").innerHTML = `
+        <div class="result-hero">
+          <div class="result-copy">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3v18M5 10c4.5-4 9.5-4 14 0M7 17c3-2 7-2 10 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              ${t.resultLabel}
+            </span>
+            <h2>${mainType.title}</h2>
+            <p>${mainType.summary}</p>
+          </div>
+          <div class="score-card">
+            <strong>${t.scoreLabel}</strong>
+            ${keys.map((key) => `
+              <div class="score-row">
+                <span>${t.names[key]}</span>
+                <div class="score-track"><div class="score-fill" style="width:${scores.percent[key]}%"></div></div>
+                <b>${scores.percent[key]}</b>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+        <div class="result-grid">
+          <article class="insight">
+            <h3>${t.blendLabel}: ${secondName}</h3>
+            <p>${secondSummary}</p>
+          </article>
+          <article class="insight wide">
+            <h3>${currentLang === "zh" ? "核心冲突" : "Core conflict"}</h3>
+            <p>${mainType.deep}</p>
+          </article>
+          <article class="insight">
+            <h3>${currentLang === "zh" ? "关系模式" : "Relationship pattern"}</h3>
+            <p>${mainType.relation}</p>
+          </article>
+          <article class="insight">
+            <h3>${t.strengthLabel}</h3>
+            <p>${mainType.strength}</p>
+          </article>
+          <article class="insight">
+            <h3>${t.shadowLabel}</h3>
+            <p>${mainType.shadow}</p>
+          </article>
+          <article class="insight">
+            <h3>${t.adviceLabel}</h3>
+            <p>${mainType.advice}</p>
+          </article>
+          <div class="result-actions">
+            <button class="secondary" type="button" id="retakeBtn">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              ${t.retake}
+            </button>
+            <button class="secondary" type="button" id="shareBtn">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.2 1.2M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.2-1.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              ${t.shareResult}
+            </button>
+            <button class="primary" type="button" id="copyBtn">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M8 8h10v12H8zM6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              ${t.copyResult}
+            </button>
+          </div>
+        </div>
+      `;
+      if (settings.updateUrl) updateShareUrl(scores);
+      $("#result").classList.add("show");
+      if (settings.scroll) $("#result").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("#retakeBtn").addEventListener("click", () => {
+        $("#quizForm").reset();
+        activeScores = null;
+        updateProgress();
+        $("#result").classList.remove("show");
+        clearShareUrl();
+        $("#quiz").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      $("#copyBtn").addEventListener("click", () => copyResult(mainType, t.names[main], secondName));
+      $("#shareBtn").addEventListener("click", () => copyShareLink(scores));
+    }
+
+    function scoresToParam(scores) {
+      return keys.map((key) => scores.raw[key]).join(",");
+    }
+
+    function scoresFromParam(value) {
+      if (!value) return null;
+      const rawValues = value.split(",").map(Number);
+      if (rawValues.length !== keys.length || rawValues.some((number) => !Number.isFinite(number))) return null;
+      const raw = Object.fromEntries(keys.map((key, index) => [key, rawValues[index]]));
+      const min = Math.min(...Object.values(raw));
+      const shifted = Object.fromEntries(keys.map((key) => [key, raw[key] - min + 1]));
+      const max = Math.max(...Object.values(shifted));
+      return {
+        raw,
+        percent: Object.fromEntries(keys.map((key) => [key, Math.round((shifted[key] / max) * 100)]))
+      };
+    }
+
+    function getShareUrl(scores) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("result", scoresToParam(scores));
+      url.searchParams.set("lang", currentLang);
+      url.hash = "result";
+      return url.toString();
+    }
+
+    function updateShareUrl(scores) {
+      window.history.replaceState(null, "", getShareUrl(scores));
+    }
+
+    function clearShareUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("result");
+      url.searchParams.delete("lang");
+      url.hash = "quiz";
+      window.history.replaceState(null, "", url.toString());
+    }
+
+    async function copyResult(mainType, mainName, secondName) {
+      const t = data[currentLang];
+      const coreLabel = currentLang === "zh" ? "核心冲突" : "Core conflict";
+      const relationLabel = currentLang === "zh" ? "关系模式" : "Relationship pattern";
+      const content = `${t.resultLabel}: ${mainName}\n${mainType.summary}\n${coreLabel}: ${mainType.deep}\n${relationLabel}: ${mainType.relation}\n${t.blendLabel}: ${secondName}\n${t.adviceLabel}: ${mainType.advice}`;
+      try {
+        await navigator.clipboard.writeText(content);
+        showToast(t.copied);
+      } catch {
+        showToast(t.copyFailed);
+      }
+    }
+
+    async function copyShareLink(scores) {
+      const t = data[currentLang];
+      const shareUrl = getShareUrl(scores);
+      updateShareUrl(scores);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast(t.shareCopied);
+      } catch {
+        showToast(t.shareFailed);
+      }
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    $("#quizForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      if (new Set(Array.from(formData.keys())).size < data[currentLang].questions.length) {
+        showToast(data[currentLang].missing);
+        const firstMissing = data[currentLang].questions.findIndex((_, index) => !formData.has(`q${index}`));
+        $$(".question").forEach((question, index) => question.classList.toggle("is-missing", !formData.has(`q${index}`)));
+        document.querySelector(`[name="q${firstMissing}"]`).closest(".question").scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      renderResult(calculateScores(formData));
+    });
+
+    $("#resetBtn").addEventListener("click", () => {
+      $("#quizForm").reset();
+      activeScores = null;
+      updateProgress();
+      $("#result").classList.remove("show");
+      clearShareUrl();
+    });
+
+    $$("[data-lang]").forEach((button) => {
+      button.addEventListener("click", () => setLanguage(button.dataset.lang));
+    });
+
+    function getSharedScores() {
+      const params = new URLSearchParams(window.location.search);
+      return scoresFromParam(params.get("result"));
+    }
+
+    const initialParams = new URLSearchParams(window.location.search);
+    const initialLang = initialParams.get("lang");
+    const sharedScores = getSharedScores();
+    setLanguage(initialLang === "en" ? "en" : "zh");
+    if (sharedScores) renderResult(sharedScores, { scroll: false, updateUrl: true });
+  </script>
+</body>
+</html>
